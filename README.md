@@ -8,7 +8,7 @@ Caracteristicas Tecnicas:
 
     Filtro de Honeypots: Omite automaticamente IPs que exponen el puerto 666 (Doom/Pentbox) para evitar sistemas trampa.
 
-    Escaneo Multihilo Asincrono: Utiliza Masscan para el radar inicial y lanza procesos Nmap en segundo plano para la auditoria profunda.
+    Escaneo Multihilo Asincrono: Utiliza Masscan para el radar inicial y lanza procesos Nmap en segundo plano para la auditoria profunda. 
 
     Persistencia de Sesion: Soporte nativo para pausar y reanudar el escaneo (paused.conf) sin perder el progreso.
 

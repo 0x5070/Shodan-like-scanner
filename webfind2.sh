@@ -25,7 +25,19 @@ scan_ip() {
 }
 trap "wait; exit" INT TERM
 while true; do
-    ip="$((RANDOM%254+1)).$((RANDOM%254+1)).$((RANDOM%254+1)).$((RANDOM%254+1))"
+    # Generamos el primer octeto por separado para validarlo
+    octeto1=$((RANDOM%254+1))
+
+    # Filtrado de rangos excluidos
+    case $octeto1 in
+        10|127|192)
+            continue # Salta esta IP y genera otra
+            ;;
+    esac
+
+    # Si pasa el filtro, generamos el resto de la IP
+    ip="$octeto1.$((RANDOM%254+1)).$((RANDOM%254+1)).$((RANDOM%254+1))"
+    
     scan_ip "$ip" &
     sleep 0.01
 done

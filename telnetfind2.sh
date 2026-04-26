@@ -1,16 +1,35 @@
 #!/bin/bash
-# TELNET-FIND: Legacy Protocol Discovery
-OUTPUT_FILE="telnet_found.txt"
+# PRINTER-FIND: IoT/Printer Discovery
+OUTPUT_FILE="telnet_founds.txt"
+WEB_PORTS=(23)
+PORTS_TO_SCAN=$(IFS=, ; echo "${WEB_PORTS[*]}")
+
 scan_ip() {
     local ip="$1"
     if ping -c 1 -W 1 "$ip" &>/dev/null; then
-        nmap -sT -Pn -n -p 23 --open -oG - "$ip" 2>/dev/null | grep "/open/" && \
-        echo "[+] Telnet Open: $ip" | tee -a "$OUTPUT_FILE"
+        nmap -Pn -n -T4 -p $PORTS_TO_SCAN --open -oG - "$ip" 2>/dev/null | grep "/open/" && \
+        echo "Found open telnet port at $ip" | tee -a "$OUTPUT_FILE"
     fi
 }
+
 trap "wait; exit" INT TERM
+
+echo "Escaneando... (Excluyendo 10.x.x.x, 127.x.x.x y 192.x.x.x.x)"
+
 while true; do
-    ip="$((RANDOM%254+1)).$((RANDOM%254+1)).$((RANDOM%254+1)).$((RANDOM%254+1))"
+    # Generamos el primer octeto por separado para validarlo
+    octeto1=$((RANDOM%254+1))
+
+    # Filtrado de rangos excluidos
+    case $octeto1 in
+        10|127|192)
+            continue # Salta esta IP y genera otra
+            ;;
+    esac
+
+    # Si pasa el filtro, generamos el resto de la IP
+    ip="$octeto1.$((RANDOM%254+1)).$((RANDOM%254+1)).$((RANDOM%254+1))"
+    
     scan_ip "$ip" &
     sleep 0.01
 done
